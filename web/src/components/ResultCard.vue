@@ -1,0 +1,45 @@
+<template>
+  <div class="result-card">
+    <div class="result-preview">
+      <div class="result-title">{{ result.title }}</div>
+      <div class="result-body">{{ result.content }}</div>
+      <div v-if="result.searchSummary" class="result-search-info">
+        搜索信息摘要：{{ result.searchSummary }}
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn-copy" @click="handleCopy">
+        {{ copied ? '已复制，可以去 TapTap 发帖啦！' : '复制全文' }}
+      </button>
+      <button class="btn-retry" @click="$emit('regenerate')">重新生成</button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const props = defineProps({
+  result: Object,
+});
+
+defineEmits(['regenerate']);
+
+const copied = ref(false);
+
+async function handleCopy() {
+  const text = `${props.result.title}\n\n${props.result.content}`;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+  copied.value = true;
+  setTimeout(() => { copied.value = false; }, 3000);
+}
+</script>
