@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { searchGameInfo } = require('../services/searchService');
-const { buildMainPrompt, buildPlayerInfoPrompt, formatPlayerInfo } = require('../services/promptService');
+const { buildMainPrompt, formatPlayerInfo } = require('../services/promptService');
 const { callAI, parseAIResponse, getMockResponse } = require('../services/aiService');
 const { checkRateLimit, logGeneration } = require('../services/rateLimiter');
+
+const ACTIVITY_INTRO = '什么是【我的百分之一】见帖子说明：https://www.taptap.cn/moment/371075389700702390';
 
 router.post('/generate', async (req, res, next) => {
   try {
@@ -27,13 +29,10 @@ router.post('/generate', async (req, res, next) => {
 
     const searchSummary = await searchGameInfo(name);
 
-    // Chunk 1: main post body
     const mainPrompt = buildMainPrompt(name, fields, searchSummary);
     let mainText = await callAI(mainPrompt);
-    let usedMock = false;
 
     if (!mainText) {
-      // Mock mode
       const mock = getMockResponse(name);
       logGeneration(req, name, true);
       return res.json({
@@ -48,22 +47,9 @@ router.post('/generate', async (req, res, next) => {
     }
 
     const mainParsed = parseAIResponse(mainText);
+    const playerSection = formatPlayerInfo(fields.playerInfo || {});
 
-    // Chunk 2: player info section
-    const playerInfo = fields.playerInfo || {};
-    let playerSection = '';
-
-    if (playerInfo.enabled) {
-      playerSection = formatPlayerInfo(playerInfo);
-    } else {
-      const playerPrompt = buildPlayerInfoPrompt(name, null);
-      const playerText = await callAI(playerPrompt);
-      if (playerText) {
-        playerSection = '\n\n' + playerText.trim();
-      }
-    }
-
-    const content = (mainParsed.content || mainText) + playerSection;
+    const content = ACTIVITY_INTRO + '\n\n' + (mainParsed.content || mainText) + playerSection;
 
     logGeneration(req, name, true);
 
