@@ -119,6 +119,13 @@ body {
   margin-top: 8px;
 }
 
+.player-info-fields {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .btn-generate {
   width: 100%;
   padding: 12px 24px;

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { searchGameInfo } = require('../services/searchService');
-const { buildPrompt } = require('../services/promptService');
+const { buildMainPrompt, buildPlayerInfoPrompt, formatPlayerInfo } = require('../services/promptService');
 const { callAI, parseAIResponse, getMockResponse } = require('../services/aiService');
 const { checkRateLimit, logGeneration } = require('../services/rateLimiter');
 
@@ -22,16 +22,20 @@ router.post('/generate', async (req, res, next) => {
       return res.status(429).json(rateLimitError);
     }
 
-    const searchSummary = await searchGameInfo(gameName.trim());
+    const name = gameName.trim();
+    const fields = manualFields || {};
 
-    const prompt = buildPrompt(gameName.trim(), manualFields || {}, searchSummary);
+    const searchSummary = await searchGameInfo(name);
 
-    let aiText = await callAI(prompt);
+    // Chunk 1: main post body
+    const mainPrompt = buildMainPrompt(name, fields, searchSummary);
+    let mainText = await callAI(mainPrompt);
     let usedMock = false;
 
-    if (!aiText) {
-      const mock = getMockResponse(gameName.trim());
-      logGeneration(req, gameName.trim(), true);
+    if (!mainText) {
+      // Mock mode
+      const mock = getMockResponse(name);
+      logGeneration(req, name, true);
       return res.json({
         code: 200,
         message: '生成成功（mock 模式）',
@@ -43,16 +47,32 @@ router.post('/generate', async (req, res, next) => {
       });
     }
 
-    const parsed = parseAIResponse(aiText);
+    const mainParsed = parseAIResponse(mainText);
 
-    logGeneration(req, gameName.trim(), true);
+    // Chunk 2: player info section
+    const playerInfo = fields.playerInfo || {};
+    let playerSection = '';
+
+    if (playerInfo.enabled) {
+      playerSection = formatPlayerInfo(playerInfo);
+    } else {
+      const playerPrompt = buildPlayerInfoPrompt(name, null);
+      const playerText = await callAI(playerPrompt);
+      if (playerText) {
+        playerSection = '\n\n' + playerText.trim();
+      }
+    }
+
+    const content = (mainParsed.content || mainText) + playerSection;
+
+    logGeneration(req, name, true);
 
     res.json({
       code: 200,
       message: '生成成功',
       data: {
-        title: parsed.title || `【我的百分之一】+【${gameName.trim()}】`,
-        content: parsed.content || aiText,
+        title: mainParsed.title || `【我的百分之一】+【${name}】`,
+        content,
         searchSummary: searchSummary || '未获取到搜索信息',
         createdAt: new Date().toISOString(),
       },

@@ -22,6 +22,47 @@
       v-model:value="form.manualFields[field.key].value"
     />
 
+    <div class="optional-field">
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          v-model="form.manualFields.playerInfo.enabled"
+          :disabled="loading"
+        />
+        <span>手动填写玩家信息</span>
+      </label>
+      <div v-if="form.manualFields.playerInfo.enabled" class="player-info-fields">
+        <input
+          v-model="form.manualFields.playerInfo.wishCard"
+          type="text"
+          class="form-input"
+          placeholder="许愿卡牌名称"
+          :disabled="loading"
+        />
+        <input
+          v-model="form.manualFields.playerInfo.gameId"
+          type="text"
+          class="form-input"
+          placeholder="游戏ID"
+          :disabled="loading"
+        />
+        <input
+          v-model="form.manualFields.playerInfo.accountId"
+          type="text"
+          class="form-input"
+          placeholder="账号ID"
+          :disabled="loading"
+        />
+        <input
+          v-model="form.manualFields.playerInfo.server"
+          type="text"
+          class="form-input"
+          placeholder="区服（安卓/苹果）"
+          :disabled="loading"
+        />
+      </div>
+    </div>
+
     <button
       class="btn-generate"
       :disabled="loading || !form.gameName.trim()"
@@ -48,7 +89,6 @@ const optionalFields = [
   { key: 'playTime', label: '手动填写游玩时间', placeholder: '例如：大约 30 小时 / 从高中玩到现在 / 断断续续玩了三年' },
   { key: 'targetPlayers', label: '手动填写推荐人群', placeholder: '例如：喜欢开放世界的玩家、解谜爱好者' },
   { key: 'personalStory', label: '手动填写个人故事或推荐理由', placeholder: '请输入你的真实感受、故事或推荐理由' },
-  { key: 'wishCard', label: '手动填写许愿卡牌', placeholder: '请输入想许愿的卡牌名称或相关内容' },
 ];
 
 const form = reactive({
@@ -58,7 +98,13 @@ const form = reactive({
     playTime: { enabled: false, value: '' },
     targetPlayers: { enabled: false, value: '' },
     personalStory: { enabled: false, value: '' },
-    wishCard: { enabled: false, value: '' },
+    playerInfo: {
+      enabled: false,
+      wishCard: '',
+      gameId: '',
+      accountId: '',
+      server: '',
+    },
   },
 });
 
