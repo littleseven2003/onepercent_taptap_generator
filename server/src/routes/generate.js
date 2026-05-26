@@ -51,7 +51,7 @@ router.post('/generate', async (req, res, next) => {
         message: aiFailed ? 'AI 服务暂时不可用，已使用示例内容' : '生成成功（mock 模式）',
         data: {
           ...mock,
-          searchSummary: searchSummary || '未获取到搜索信息',
+          searchSummary: searchSummary || '',
           createdAt: new Date().toISOString(),
         },
       });
@@ -70,7 +70,7 @@ router.post('/generate', async (req, res, next) => {
       data: {
         title: mainParsed.title || `【我的百分之一】+【${name}】`,
         content,
-        searchSummary: searchSummary || '未获取到搜索信息',
+        searchSummary: searchSummary || '',
         createdAt: new Date().toISOString(),
       },
     });

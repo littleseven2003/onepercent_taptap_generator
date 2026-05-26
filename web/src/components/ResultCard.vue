@@ -1,12 +1,18 @@
 <template>
   <div class="result-card">
+    <div v-if="result.searchSummary" class="search-card">
+      <div class="search-header">
+        <span class="search-icon">&#128269;</span>
+        <span>搜索到的游戏信息</span>
+      </div>
+      <div class="search-body">{{ result.searchSummary }}</div>
+    </div>
+
     <div class="result-preview">
       <div class="result-title">{{ result.title }}</div>
       <div class="result-body">{{ result.content }}</div>
-      <div v-if="result.searchSummary" class="result-search-info">
-        搜索信息摘要：{{ result.searchSummary }}
-      </div>
     </div>
+
     <div class="result-actions">
       <button class="btn-copy" @click="handleCopy">
         {{ copied ? '已复制，可以去 TapTap 发帖啦！' : '复制全文' }}
