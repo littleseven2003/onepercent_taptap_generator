@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const SEARCH_TIMEOUT = 15000;
+const SEARCH_TIMEOUT = 5000;
 
 async function searchGameInfo(gameName) {
   try {

@@ -27,17 +27,28 @@ router.post('/generate', async (req, res, next) => {
     const name = gameName.trim();
     const fields = manualFields || {};
 
-    const searchSummary = await searchGameInfo(name);
+    let searchSummary = '';
+    try {
+      searchSummary = await searchGameInfo(name);
+    } catch (err) {
+      console.error('[Search] failed:', err.message);
+    }
 
-    const mainPrompt = buildMainPrompt(name, fields, searchSummary);
-    let mainText = await callAI(mainPrompt);
+    let mainText = null;
+    let aiFailed = false;
+    try {
+      mainText = await callAI(buildMainPrompt(name, fields, searchSummary));
+    } catch (err) {
+      console.error('[AI] call failed:', err.message);
+      aiFailed = true;
+    }
 
     if (!mainText) {
       const mock = getMockResponse(name);
       logGeneration(req, name, true);
       return res.json({
         code: 200,
-        message: '生成成功（mock 模式）',
+        message: aiFailed ? 'AI 服务暂时不可用，已使用示例内容' : '生成成功（mock 模式）',
         data: {
           ...mock,
           searchSummary: searchSummary || '未获取到搜索信息',
