@@ -9,15 +9,17 @@
       />
       <span>{{ label }}</span>
     </label>
-    <input
-      v-if="enabled"
-      v-model="localValue"
-      type="text"
-      class="form-input optional-input"
-      :placeholder="placeholder"
-      :disabled="disabled"
-      @input="$emit('update:value', $event.target.value)"
-    />
+    <Transition name="expand">
+      <input
+        v-if="enabled"
+        v-model="localValue"
+        type="text"
+        class="text-input optional-input"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        @input="$emit('update:value', $event.target.value)"
+      />
+    </Transition>
   </div>
 </template>
 
