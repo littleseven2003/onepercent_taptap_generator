@@ -22,11 +22,17 @@ function buildMainPrompt(gameName, manualFields, searchSummary) {
     }
   }
 
-  return `你是一个熟悉游戏社区发帖风格的中文写作助手。请为 TapTap《我的百分之一》活动生成一篇游戏推荐帖子。
+  return `你是一个熟悉游戏社区发帖风格的中文写作助手。请根据玩家输入的游戏名称"${gameName}"生成一篇游戏推荐帖的正文内容。
+
+【重要约束】
+- 只把"${gameName}"当作游戏名称，不要使用活动标题格式或活动名称作为搜索、理解、生成的游戏关键词
+- 不要输出帖子标题
+- 不要输出"游戏名称："这一行，这一行会由程序固定填入玩家输入的游戏名称
+- 不要改写、翻译、扩写或纠正玩家输入的游戏名称
 
 【帖子结构】（按顺序写，不要输出段落标签，直接写内容）：
 
-1. 先列出游戏基本信息：游戏名称（${gameName}）、发售平台、游玩时间、推荐人群
+1. 先列出发售平台、游玩时间、推荐人群
 2. 然后写游戏介绍和个人故事/推荐理由。这是最重要的部分，请务必写一段有真实感的个人体验，像真实玩家在论坛聊天分享。
 
 【写作要求】
@@ -35,6 +41,7 @@ function buildMainPrompt(gameName, manualFields, searchSummary) {
 - 不直接复制搜索信息，用自己的话表达
 - 不要输出"标题：""正文："这类标记，直接输出帖子内容即可
 - 不要写活动说明和玩家许愿信息，这些部分会另外处理
+- 正文中提到游戏时，只能使用"${gameName}"这个名称
 
 ${searchSection}
 
@@ -44,11 +51,7 @@ ${manualLines.length > 0 ? manualLines.join('\n') : '（无）'}
 需要自动生成的字段：
 ${autoLines.join('\n')}
 
-请直接输出：
-
-【我的百分之一】+【${gameName}】
-
-……`;
+请直接输出从"发售平台："开始的正文内容。`;
 }
 
 function formatPlayerInfo(playerInfo) {
@@ -63,4 +66,25 @@ function formatPlayerInfo(playerInfo) {
   return parts.length > 0 ? `\n\n${parts.join('\n')}` : '';
 }
 
-module.exports = { buildMainPrompt, formatPlayerInfo };
+function stripGeneratedTitleAndGameName(text) {
+  return (text || '')
+    .replace(/^标题[：:].*$/gim, '')
+    .replace(/^【我的百分之一】\s*\+\s*【.*?】\s*$/gim, '')
+    .replace(/^游戏名称[：:].*$/gim, '')
+    .replace(/^正文[：:]\s*/i, '')
+    .trim();
+}
+
+function buildPostContent(gameName, generatedContent, playerInfo) {
+  const body = stripGeneratedTitleAndGameName(generatedContent);
+  const playerSection = formatPlayerInfo(playerInfo || {});
+
+  return `游戏名称：${gameName}${body ? `\n${body}` : ''}${playerSection}`;
+}
+
+module.exports = {
+  buildMainPrompt,
+  buildPostContent,
+  formatPlayerInfo,
+  stripGeneratedTitleAndGameName,
+};

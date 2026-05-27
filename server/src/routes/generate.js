@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { searchGameInfo } = require('../services/searchService');
-const { buildMainPrompt, formatPlayerInfo } = require('../services/promptService');
+const { buildMainPrompt, buildPostContent } = require('../services/promptService');
 const { callAI, parseAIResponse, getMockResponse } = require('../services/aiService');
 const { checkRateLimit, logGeneration } = require('../services/rateLimiter');
 
@@ -58,9 +58,7 @@ router.post('/generate', async (req, res, next) => {
     }
 
     const mainParsed = parseAIResponse(mainText);
-    const playerSection = formatPlayerInfo(fields.playerInfo || {});
-
-    const content = ACTIVITY_INTRO + '\n\n' + (mainParsed.content || mainText) + playerSection;
+    const content = ACTIVITY_INTRO + '\n\n' + buildPostContent(name, mainParsed.content || mainText, fields.playerInfo);
 
     logGeneration(req, name, true);
 
@@ -68,7 +66,7 @@ router.post('/generate', async (req, res, next) => {
       code: 200,
       message: '生成成功',
       data: {
-        title: mainParsed.title || `【我的百分之一】+【${name}】`,
+        title: `【我的百分之一】+【${name}】`,
         content,
         searchSummary: searchSummary || '',
         createdAt: new Date().toISOString(),

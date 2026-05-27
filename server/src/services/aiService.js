@@ -50,7 +50,7 @@ function parseAIResponse(text) {
 function getMockResponse(gameName) {
   return {
     title: `【我的百分之一】+【${gameName}】`,
-    content: `游戏名称：《${gameName}》
+    content: `游戏名称：${gameName}
 游戏当时发售平台：PC / Switch
 玩游戏的时间：断断续续玩了快两年
 推荐人群：喜欢沉浸式体验、不追求快餐节奏的玩家
