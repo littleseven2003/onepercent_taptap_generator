@@ -54,11 +54,29 @@ docker compose up -d
 | `AI_API_BASE_URL` | AI API 地址 | - |
 | `AI_API_KEY` | AI API Key | - |
 | `AI_MODEL` | 模型名称 | `gpt-3.5-turbo` |
+| `SEARCH_ENABLED` | 是否启用联网搜索 | `true` |
+| `SEARCH_PROVIDER` | 搜索源：`auto` / `bing` / `sm` / `baidu` / `google` / `none` | `auto` |
+| `SEARCH_TIMEOUT_MS` | 单个搜索源超时时间（毫秒） | `8000` |
+| `SEARCH_USE_PROXY` | 搜索请求是否使用系统代理变量 | `false` |
 | `RATE_LIMIT_WINDOW_MINUTES` | 限流窗口（分钟） | `10` |
 | `RATE_LIMIT_MAX_REQUESTS` | 窗口内最大次数 | `3` |
 | `RATE_LIMIT_DAILY_MAX` | 每日最大次数 | `20` |
 
 未配置 AI_API_KEY 时，将使用 mock 模式返回示例内容。
+
+搜索默认使用 `auto` 模式，会按 Bing -> 神马 -> 百度 顺序尝试。国内网络环境建议保留 `auto` 或设置为 `bing` / `sm` / `baidu`，不建议依赖 `google`。如需完全关闭联网搜索，可设置：
+
+```bash
+SEARCH_ENABLED=false
+# 或
+SEARCH_PROVIDER=none
+```
+
+默认搜索请求会忽略系统 `HTTP_PROXY` / `HTTPS_PROXY`，避免本机代理端口未启动时导致搜索失败。如确实需要走代理，可设置：
+
+```bash
+SEARCH_USE_PROXY=true
+```
 
 ## 活动格式
 
