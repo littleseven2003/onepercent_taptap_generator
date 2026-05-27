@@ -87,4 +87,4 @@ SEARCH_USE_PROXY=true
 
 ## License
 
-MIT
+GPL-3.0
