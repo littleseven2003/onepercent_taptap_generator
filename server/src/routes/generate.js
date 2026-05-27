@@ -6,6 +6,12 @@ const { callAI, parseAIResponse, getMockResponse } = require('../services/aiServ
 const { checkRateLimit, logGeneration } = require('../services/rateLimiter');
 
 const ACTIVITY_INTRO = '什么是【我的百分之一】见帖子说明：https://www.taptap.cn/moment/371075389700702390';
+const DEFAULT_SEARCH_STATUS = {
+  status: 'failed',
+  message: '搜索服务异常，已改用通用生成方式',
+  results: [],
+  summary: '',
+};
 
 router.post('/generate', async (req, res, next) => {
   try {
@@ -27,12 +33,13 @@ router.post('/generate', async (req, res, next) => {
     const name = gameName.trim();
     const fields = manualFields || {};
 
-    let searchSummary = '';
+    let searchStatus = DEFAULT_SEARCH_STATUS;
     try {
-      searchSummary = await searchGameInfo(name);
+      searchStatus = await searchGameInfo(name);
     } catch (err) {
       console.error('[Search] failed:', err.message);
     }
+    const searchSummary = searchStatus.summary || '';
 
     let mainText = null;
     let aiFailed = false;
@@ -52,6 +59,7 @@ router.post('/generate', async (req, res, next) => {
         data: {
           ...mock,
           searchSummary: searchSummary || '',
+          searchStatus,
           createdAt: new Date().toISOString(),
         },
       });
@@ -69,6 +77,7 @@ router.post('/generate', async (req, res, next) => {
         title: `【我的百分之一】+【${name}】`,
         content,
         searchSummary: searchSummary || '',
+        searchStatus,
         createdAt: new Date().toISOString(),
       },
     });

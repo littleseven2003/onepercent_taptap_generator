@@ -5,17 +5,6 @@
       <span class="meta-item">{{ wordCount }} 字</span>
     </div>
 
-    <div v-if="result.searchSummary" class="search-card">
-      <div class="search-card-header">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <circle cx="11" cy="11" r="7" />
-          <path d="m20 20-3.5-3.5" />
-        </svg>
-        <span>搜索摘要</span>
-      </div>
-      <p>{{ result.searchSummary }}</p>
-    </div>
-
     <article class="preview-card">
       <h2>{{ result.title }}</h2>
       <div class="preview-body">{{ result.content }}</div>

@@ -34,22 +34,22 @@
 
     <main class="workspace">
       <section class="intro-panel" aria-labelledby="page-title">
-        <p class="eyebrow">AI game post studio</p>
-        <h1 id="page-title">把游戏名变成一篇能发的 TapTap 推荐帖</h1>
+        <p class="eyebrow">OnePercent TapTap Generator</p>
+        <h1 id="page-title">百分之一帖子生成器</h1>
         <p class="intro-copy">
           输入游戏名，补充你想保留的真实信息，后端会搜索公开资料并生成符合《我的百分之一》活动格式的帖子。
         </p>
-        <div class="status-strip" aria-label="生成流程">
-          <span>搜索资料</span>
-          <span>组织经历</span>
-          <span>复制发布</span>
-        </div>
       </section>
 
       <section class="composer-layout">
         <GeneratorForm ref="formRef" :loading="loading" @submit="handleGenerate" />
 
         <aside class="output-panel" aria-live="polite">
+          <SearchStatus
+            v-if="searchStatus"
+            :status="searchStatus"
+          />
+
           <ResultCard
             v-if="result"
             :result="result"
@@ -90,10 +90,12 @@ import { ref, onMounted } from 'vue';
 import GeneratorForm from './components/GeneratorForm.vue';
 import ResultCard from './components/ResultCard.vue';
 import EmptyState from './components/EmptyState.vue';
+import SearchStatus from './components/SearchStatus.vue';
 import { generatePost } from './api/generate';
 
 const loading = ref(false);
 const result = ref(null);
+const searchStatus = ref(null);
 const error = ref('');
 const errorType = ref('error');
 const theme = ref('light');
@@ -123,11 +125,29 @@ async function handleGenerate(payload) {
   error.value = '';
   errorType.value = 'error';
   result.value = null;
+  searchStatus.value = {
+    status: 'pending',
+    message: '正在搜索公开资料，稍后会展示搜索结果',
+    results: [],
+  };
 
   try {
     const res = await generatePost(payload);
     result.value = res.data.data;
+    searchStatus.value = res.data.data.searchStatus || {
+      status: res.data.data.searchSummary ? 'success' : 'empty',
+      message: res.data.data.searchSummary ? '搜索完成，已提取摘要' : '没有搜索到可用摘要，已改用通用生成方式',
+      results: res.data.data.searchSummary
+        ? [{ status: 'success', title: '搜索摘要', content: res.data.data.searchSummary }]
+        : [],
+    };
   } catch (err) {
+    searchStatus.value = {
+      status: 'failed',
+      message: '生成请求失败，未能完成搜索结果展示',
+      results: [],
+    };
+
     const status = err.response?.status;
     const msg = err.response?.data?.message;
 
@@ -150,6 +170,7 @@ async function handleGenerate(payload) {
 
 function handleRegenerate() {
   result.value = null;
+  searchStatus.value = null;
   error.value = '';
 }
 
