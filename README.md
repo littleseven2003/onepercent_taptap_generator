@@ -1,12 +1,23 @@
-# OnePercent TapTap Generator
+<div align="center">
+  <h1>OnePercent TapTap Generator</h1>
 
-[![version](https://img.shields.io/badge/version-v1.0.0-2563eb)](#版本)
-[![standard-readme](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
-[![license](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](./LICENSE)
+  <img src="./docs/assets/logo.svg" alt="OnePercent TapTap Generator" width="760">
 
-百分之一 TapTap 帖子生成器：输入游戏名，搜索公开资料，并生成符合《我的百分之一》活动格式的推荐帖。
+  <p>
+    <a href="#版本"><img alt="version" src="https://img.shields.io/badge/version-v1.0.0-2563eb"></a>
+    <a href="https://github.com/RichardLitt/standard-readme"><img alt="standard-readme" src="https://img.shields.io/badge/readme%20style-standard-brightgreen.svg"></a>
+    <a href="./LICENSE"><img alt="license" src="https://img.shields.io/badge/license-GPL--3.0-blue.svg"></a>
+    <img alt="node" src="https://img.shields.io/badge/node-%3E%3D18-16a34a">
+    <img alt="frontend" src="https://img.shields.io/badge/frontend-Vue%203-42b883">
+    <img alt="backend" src="https://img.shields.io/badge/backend-Express-111827">
+  </p>
 
-这是一个面向玩家的轻量 Web 工具。前端提供游戏名输入、可选补充字段、搜索状态展示、主题配色和结果复制；后端负责搜索公开资料、调用 AI 生成结构化帖子，并通过 SQLite 做基础限流。
+  <p>
+    <strong>百分之一 TapTap 帖子生成器</strong>
+    <br>
+    输入游戏名，搜索公开资料，并生成符合 TapTap《我的百分之一》活动格式的推荐帖。
+  </p>
+</div>
 
 ## 目录
 
@@ -18,6 +29,7 @@
 - [功能](#功能)
 - [技术栈](#技术栈)
 - [API](#api)
+- [项目结构](#项目结构)
 - [版本](#版本)
 - [维护者](#维护者)
 - [贡献](#贡献)
@@ -28,21 +40,25 @@
 - 不要提交 `.env`、API Key、代理账号或任何私密配置。
 - 公开仓库只应提交 `.env.example` 一类模板文件。
 - 生产环境建议使用 HTTPS，并在网关或反向代理层补充访问频率限制。
+- `/api/config` 只暴露前端可展示的限流配置，不暴露 AI Key、模型地址等敏感信息。
 - 当前后端已包含基础限流，但它不能替代完整的鉴权、审计和风控系统。
 
 ## 背景
 
 TapTap《我的百分之一》活动帖通常需要固定信息结构，例如游戏名称、发售平台、游玩时间、推荐人群、个人故事和许愿卡牌。手写这类帖子容易遗漏字段，也容易在格式上不统一。
 
-本项目的目标是保留玩家输入的真实信息，让 AI 只负责资料整理和表达生成。尤其是最终文章中的“游戏名称”始终使用用户输入值，不由 AI 改写。
+本项目的目标是保留玩家输入的真实信息，让 AI 只负责资料整理和表达生成。最终文章中的“游戏名称”始终使用用户输入值，不由 AI 改写。
 
 ## 安装
 
 ### 依赖
 
-- Node.js 18+
-- npm 9+
-- Docker 与 Docker Compose，若使用容器部署
+| 依赖 | 建议版本 | 说明 |
+| --- | --- | --- |
+| Node.js | 18+ | 前后端运行环境 |
+| npm | 9+ | 依赖安装和脚本执行 |
+| Docker | 可选 | 容器部署 |
+| Docker Compose | 可选 | 一键启动前后端服务 |
 
 ### 本地安装
 
@@ -83,8 +99,10 @@ npm run dev
 
 默认访问地址：
 
-- 前端：`http://localhost:5173`
-- 后端：`http://localhost:3000`
+| 服务 | 地址 |
+| --- | --- |
+| 前端 | `http://localhost:5173` |
+| 后端 | `http://localhost:3000` |
 
 ### Docker 部署
 
@@ -94,8 +112,18 @@ docker compose up -d
 
 默认访问地址：
 
-- Web：`http://localhost:8080`
-- API：`http://localhost:3000`
+| 服务 | 地址 |
+| --- | --- |
+| Web | `http://localhost:8080` |
+| API | `http://localhost:3000` |
+
+### 推荐流程
+
+1. 输入游戏名称。
+2. 按需展开“手动补充信息”，填写游玩时间、推荐人群或个人故事。
+3. 点击生成帖子。
+4. 查看搜索状态和生成结果。
+5. 一键复制全文到 TapTap。
 
 ## 配置
 
@@ -131,21 +159,34 @@ SEARCH_USE_PROXY=true
 
 ## 功能
 
-- 输入游戏名生成 TapTap《我的百分之一》活动格式帖子。
-- 支持手动补充发售平台、游玩时间、推荐人群、个人故事和许愿卡牌。
-- 支持可展开搜索状态区，展示搜索成功、失败、超时和无结果状态。
-- 最终文章中的游戏名称固定使用用户输入值。
-- 支持一键复制生成结果。
-- 支持亮色 / 暗色模式，以及多套主题配色。
-- 页面底部展示版本、使用限制、GitHub 仓库和开源协议。
-- 适配桌面端和移动端。
+| 功能 | 说明 |
+| --- | --- |
+| 活动格式生成 | 生成 TapTap《我的百分之一》活动格式帖子 |
+| 用户输入优先 | 最终文章中的游戏名称固定使用用户输入值 |
+| 联网搜索 | 可搜索公开资料，并展示搜索成功、失败、超时和无结果状态 |
+| 手动补充 | 支持发售平台、游玩时间、推荐人群、个人故事和许愿卡牌 |
+| 一键复制 | 快速复制生成结果 |
+| 主题系统 | 支持亮色 / 暗色模式和多套主题配色 |
+| 使用限制展示 | 页面底部展示版本、限流说明、GitHub 仓库和 GPL 协议 |
+| 响应式界面 | 适配桌面端和移动端 |
 
 ## 技术栈
 
-- 前端：Vue 3、Vite、Axios
-- 后端：Node.js、Express、Axios
-- 数据：SQLite，用于限流记录
-- 部署：Docker、Docker Compose、Nginx
+```mermaid
+flowchart LR
+  User["用户浏览器"] --> Web["Vue 3 + Vite"]
+  Web --> API["Express API"]
+  API --> Search["搜索源：Bing / 神马 / 百度 / Google"]
+  API --> AI["AI Chat API"]
+  API --> DB["SQLite 限流记录"]
+```
+
+| 模块 | 技术 |
+| --- | --- |
+| 前端 | Vue 3、Vite、Axios |
+| 后端 | Node.js、Express、Axios |
+| 数据 | SQLite，用于限流记录 |
+| 部署 | Docker、Docker Compose、Nginx |
 
 ## API
 
@@ -206,6 +247,30 @@ curl -X POST http://localhost:3000/api/generate \
 | `personalStory` | 个人故事或推荐理由 | 否 |
 | `wishCard` | 许愿卡牌 | 否 |
 
+## 项目结构
+
+```text
+.
+├── docker-compose.yml
+├── docs/
+│   ├── assets/
+│   │   └── logo.svg
+│   └── design.md
+├── server/
+│   ├── src/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   └── app.js
+│   └── package.json
+├── web/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── styles/
+│   │   └── App.vue
+│   └── package.json
+└── README.md
+```
+
 ## 版本
 
 当前稳定版本：`v1.0.0`
@@ -231,6 +296,8 @@ curl -X POST http://localhost:3000/api/generate \
 ```
 
 常用类型包括 `feature`、`fix`、`docs`、`style`、`refactor`、`config`、`deploy`、`chore`。
+
+README 结构参考 [standard-readme](https://github.com/RichardLitt/standard-readme)，保持标题、目录、安装、使用、贡献和 License 等核心章节可快速定位。
 
 ## License
 
