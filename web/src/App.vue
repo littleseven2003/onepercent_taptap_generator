@@ -16,20 +16,57 @@
         </span>
       </a>
 
-      <button
-        class="icon-button"
-        :aria-label="theme === 'dark' ? '切换到亮色模式' : '切换到暗色模式'"
-        :title="theme === 'dark' ? '切换到亮色模式' : '切换到暗色模式'"
-        @click="toggleTheme"
-      >
-        <svg v-if="theme === 'dark'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-        </svg>
-        <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8Z" />
-        </svg>
-      </button>
+      <div class="nav-controls">
+        <div class="palette-menu">
+          <button
+            class="icon-button"
+            type="button"
+            aria-label="选择主题配色"
+            title="选择主题配色"
+            :aria-expanded="paletteOpen"
+            @click="paletteOpen = !paletteOpen"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+              <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+              <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+              <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+              <path d="M12 3a9 9 0 0 0 0 18h1.5a2 2 0 0 0 1.6-3.2 1.4 1.4 0 0 1 1.1-2.3H18a3 3 0 0 0 3-3 9 9 0 0 0-9-9Z" />
+            </svg>
+          </button>
+
+          <div v-if="paletteOpen" class="palette-popover" role="menu" aria-label="主题配色">
+            <button
+              v-for="option in palettes"
+              :key="option.value"
+              class="palette-option"
+              :class="{ 'palette-option--active': palette === option.value }"
+              type="button"
+              role="menuitemradio"
+              :aria-checked="palette === option.value"
+              @click="applyPalette(option.value)"
+            >
+              <span class="palette-swatch" :style="{ '--swatch-color': option.color }"></span>
+              <span>{{ option.label }}</span>
+            </button>
+          </div>
+        </div>
+
+        <button
+          class="icon-button"
+          :aria-label="theme === 'dark' ? '切换到亮色模式' : '切换到暗色模式'"
+          :title="theme === 'dark' ? '切换到亮色模式' : '切换到暗色模式'"
+          @click="toggleTheme"
+        >
+          <svg v-if="theme === 'dark'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+          </svg>
+          <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8Z" />
+          </svg>
+        </button>
+      </div>
     </nav>
 
     <main class="workspace">
@@ -99,14 +136,30 @@ const searchStatus = ref(null);
 const error = ref('');
 const errorType = ref('error');
 const theme = ref('light');
+const palette = ref('violet');
+const paletteOpen = ref(false);
 const formRef = ref(null);
 
-const STORAGE_KEY = 'onepercent-theme';
+const THEME_STORAGE_KEY = 'onepercent-theme';
+const PALETTE_STORAGE_KEY = 'onepercent-palette';
+const palettes = [
+  { value: 'violet', label: '紫藤', color: '#6d28d9' },
+  { value: 'blue', label: '海蓝', color: '#2563eb' },
+  { value: 'green', label: '薄荷', color: '#059669' },
+  { value: 'rose', label: '莓果', color: '#e11d48' },
+];
 
 function applyTheme(t) {
   theme.value = t;
   document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem(STORAGE_KEY, t);
+  localStorage.setItem(THEME_STORAGE_KEY, t);
+}
+
+function applyPalette(p) {
+  palette.value = p;
+  paletteOpen.value = false;
+  document.documentElement.setAttribute('data-palette', p);
+  localStorage.setItem(PALETTE_STORAGE_KEY, p);
 }
 
 function toggleTheme() {
@@ -114,9 +167,16 @@ function toggleTheme() {
 }
 
 onMounted(() => {
-  const saved = localStorage.getItem(STORAGE_KEY);
+  const saved = localStorage.getItem(THEME_STORAGE_KEY);
   if (saved === 'dark' || saved === 'light') {
     applyTheme(saved);
+  }
+
+  const savedPalette = localStorage.getItem(PALETTE_STORAGE_KEY);
+  if (palettes.some((item) => item.value === savedPalette)) {
+    applyPalette(savedPalette);
+  } else {
+    applyPalette(palette.value);
   }
 });
 

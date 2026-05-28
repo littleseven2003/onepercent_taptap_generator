@@ -9,12 +9,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>百分之一小作文生成工具</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>" />
-    <!-- 防深色模式闪烁：在 HTML 解析前注入 data-theme -->
+    <!-- 防主题闪烁：在 HTML 解析前注入 data-theme / data-palette -->
     <script>
       (function() {
         var t = localStorage.getItem('onepercent-theme');
         if (t === 'dark' || t === 'light') {
           document.documentElement.setAttribute('data-theme', t);
+        }
+        var p = localStorage.getItem('onepercent-palette');
+        if (['violet', 'blue', 'green', 'rose'].indexOf(p) > -1) {
+          document.documentElement.setAttribute('data-palette', p);
         }
       })();
     </script>
