@@ -883,17 +883,19 @@ svg {
 
 .btn--copy {
   color: #ffffff;
-  background: var(--color-accent);
-  border-color: var(--color-accent);
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-brand) 18%, transparent);
 }
 
 .btn--copy:hover {
-  background: #15803d;
+  background: var(--color-brand-strong);
+  border-color: var(--color-brand-strong);
 }
 
 .btn--copied {
-  background: var(--color-brand);
-  border-color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 82%, var(--color-accent));
+  border-color: color-mix(in srgb, var(--color-brand) 82%, var(--color-accent));
 }
 
 .btn--retry {
