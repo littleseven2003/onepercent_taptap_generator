@@ -1,86 +1,97 @@
-<div align="center">
-  <h1>OnePercent TapTap Generator</h1>
+<p align="center">
+  <img src="./docs/assets/logo.svg" alt="OnePercent TapTap Generator Logo" width="760">
+</p>
 
-  <img src="./docs/assets/logo.svg" alt="OnePercent TapTap Generator" width="760">
+# 百分之一帖子生成器
 
-  <p>
-    <a href="#版本"><img alt="version" src="https://img.shields.io/badge/version-v1.0.0-2563eb"></a>
-    <a href="https://github.com/RichardLitt/standard-readme"><img alt="standard-readme" src="https://img.shields.io/badge/readme%20style-standard-brightgreen.svg"></a>
-    <a href="./LICENSE"><img alt="license" src="https://img.shields.io/badge/license-GPL--3.0-blue.svg"></a>
-    <img alt="node" src="https://img.shields.io/badge/node-%3E%3D18-16a34a">
-    <img alt="frontend" src="https://img.shields.io/badge/frontend-Vue%203-42b883">
-    <img alt="backend" src="https://img.shields.io/badge/backend-Express-111827">
-  </p>
+面向 TapTap《我的百分之一》活动的轻量 AI 推荐帖生成工具。
 
-  <p>
-    <strong>百分之一 TapTap 帖子生成器</strong>
-    <br>
-    输入游戏名，搜索公开资料，并生成符合 TapTap《我的百分之一》活动格式的推荐帖。
-  </p>
-</div>
+![Version](https://img.shields.io/badge/version-v1.0.0-2563eb)
+![License](https://img.shields.io/badge/license-GPL--3.0-blue)
+![Docker](https://img.shields.io/badge/deploy-Docker-2496ed)
+![Vue](https://img.shields.io/badge/frontend-Vue%203-42b883)
+![Node](https://img.shields.io/badge/backend-Node.js-16a34a)
+![Readme](https://img.shields.io/badge/readme-standard-brightgreen)
 
-## 目录
+[快速开始](#快速开始) · [项目特性](#项目特性) · [功能范围](#功能范围) · [技术架构](#技术架构) · [API](#api) · [免责声明](#免责声明)
 
-- [安全](#安全)
-- [背景](#背景)
-- [安装](#安装)
-- [使用](#使用)
-- [配置](#配置)
-- [功能](#功能)
-- [技术栈](#技术栈)
-- [API](#api)
-- [项目结构](#项目结构)
-- [版本](#版本)
-- [维护者](#维护者)
-- [贡献](#贡献)
-- [License](#license)
+## 项目简介
 
-## 安全
+`百分之一帖子生成器` 是一个输入游戏名即可生成 TapTap《我的百分之一》活动格式推荐帖的 Web 工具。它会根据用户输入的游戏名称搜索公开资料，并结合玩家手动补充的信息生成一篇结构完整、方便复制发布的帖子。
 
-- 不要提交 `.env`、API Key、代理账号或任何私密配置。
-- 公开仓库只应提交 `.env.example` 一类模板文件。
-- 生产环境建议使用 HTTPS，并在网关或反向代理层补充访问频率限制。
-- `/api/config` 只暴露前端可展示的限流配置，不暴露 AI Key、模型地址等敏感信息。
-- 当前后端已包含基础限流，但它不能替代完整的鉴权、审计和风控系统。
+项目强调“用户输入优先”。最终文章中的“游戏名称”始终使用玩家输入值，不交给 AI 改写；可选字段也会尽量保留用户原始表达，让 AI 主要负责资料整理、语气润色和活动格式组织。
 
-## 背景
+前端提供表单、搜索状态、生成结果、主题配色、使用限制提示和一键复制；后端负责联网搜索、AI 调用、提示词组装和基于 SQLite 的基础限流。
 
-TapTap《我的百分之一》活动帖通常需要固定信息结构，例如游戏名称、发售平台、游玩时间、推荐人群、个人故事和许愿卡牌。手写这类帖子容易遗漏字段，也容易在格式上不统一。
+## 项目特性
 
-本项目的目标是保留玩家输入的真实信息，让 AI 只负责资料整理和表达生成。最终文章中的“游戏名称”始终使用用户输入值，不由 AI 改写。
+| 能力 | 说明 |
+| --- | --- |
+| 活动格式生成 | 生成 TapTap《我的百分之一》活动格式帖子 |
+| 游戏名固定 | 最终文章中的游戏名称直接使用玩家输入值 |
+| 联网搜索 | 自动搜索公开资料，支持成功、失败、超时和无结果状态展示 |
+| 手动补充 | 支持发售平台、游玩时间、推荐人群、个人故事、许愿卡牌 |
+| 结果复制 | 一键复制完整生成结果 |
+| 主题系统 | 支持亮色 / 暗色模式和多套主题配色 |
+| 使用限制提示 | 页面底部展示版本、使用限制、GitHub 仓库和 GPL 协议 |
+| Docker 部署 | 支持 Docker Compose 一键部署 |
 
-## 安装
+## 功能范围
 
-### 依赖
+- 输入游戏名并生成活动推荐帖。
+- 根据公开资料生成游戏背景和推荐理由。
+- 展示可展开的搜索状态区。
+- 根据后端 env 限流配置展示“使用限制”悬浮说明。
+- 在没有配置 AI Key 时使用 mock 内容，方便本地调试。
+- 支持桌面端和移动端浏览器。
 
-| 依赖 | 建议版本 | 说明 |
-| --- | --- | --- |
-| Node.js | 18+ | 前后端运行环境 |
-| npm | 9+ | 依赖安装和脚本执行 |
-| Docker | 可选 | 容器部署 |
-| Docker Compose | 可选 | 一键启动前后端服务 |
+当前不包含用户登录、后台管理、API Key 在线管理、模型在线切换、多人协作编辑或帖子发布自动化。本项目只负责生成和复制文本，不会代替用户发布内容。
 
-### 本地安装
+## 免责声明
+
+本项目仅用于软件开发、AI 工具研究与技术交流学习，主要用于探索 Web 应用开发、AI 内容生成、搜索服务整合、Docker 部署和开源项目维护流程。
+
+本项目页面、提示词和生成内容可能涉及已上线游戏《百分之一》及 TapTap 活动相关信息。本项目不是《百分之一》官方产品，不代表游戏开发方、发行方或 TapTap 平台立场，也不提供任何商业化服务。
+
+项目运行过程中获取或整理的公开资料仅用于学习、测试和内容生成演示。不得将本项目用于违规获取游戏资源、绕过平台或游戏规则、违规参与游戏活动、刷取奖励、伪造内容或其他可能损害游戏方、平台方及其他用户权益的行为。
+
+使用者应遵守相关游戏、平台活动规则、版权、商标和社区规范。生成内容仅供参考，发布前请自行核对事实，并自行承担使用与发布责任。
+
+## 快速开始
+
+### 部署用户
+
+推荐使用 Docker Compose：
 
 ```bash
 git clone git@github.com:littleseven2003/onepercent_taptap_generator.git
 cd onepercent_taptap_generator
+cp .env.example .env
+docker compose up -d --build
+```
 
+部署后访问：
+
+```text
+http://服务器IP:8080
+```
+
+当前发布版本：`v1.0.0`。
+
+### 开发者
+
+安装后端依赖：
+
+```bash
 cd server
-npm install
-
-cd ../web
 npm install
 ```
 
-## 使用
-
-### 本地开发
-
-先配置后端环境变量：
+安装前端依赖：
 
 ```bash
-cp .env.example .env
+cd web
+npm install
 ```
 
 启动后端：
@@ -97,35 +108,20 @@ cd web
 npm run dev
 ```
 
-默认访问地址：
+浏览器访问：
 
-| 服务 | 地址 |
-| --- | --- |
-| 前端 | `http://localhost:5173` |
-| 后端 | `http://localhost:3000` |
-
-### Docker 部署
-
-```bash
-docker compose up -d
+```text
+http://localhost:5173
 ```
 
-默认访问地址：
+生产构建：
 
-| 服务 | 地址 |
-| --- | --- |
-| Web | `http://localhost:8080` |
-| API | `http://localhost:3000` |
+```bash
+cd web
+npm run build
+```
 
-### 推荐流程
-
-1. 输入游戏名称。
-2. 按需展开“手动补充信息”，填写游玩时间、推荐人群或个人故事。
-3. 点击生成帖子。
-4. 查看搜索状态和生成结果。
-5. 一键复制全文到 TapTap。
-
-## 配置
+## 环境变量
 
 | 变量 | 说明 | 默认值 |
 | --- | --- | --- |
@@ -141,98 +137,47 @@ docker compose up -d
 | `RATE_LIMIT_MAX_REQUESTS` | 窗口内最大请求次数 | `3` |
 | `RATE_LIMIT_DAILY_MAX` | 每日最大请求次数 | `20` |
 
-未配置 `AI_API_KEY` 时，后端会使用 mock 模式返回示例内容，便于本地调试页面流程。
+未配置 `AI_API_KEY` 时，后端会使用 mock 模式返回示例内容。
 
-搜索默认使用 `auto` 模式，会按 Bing -> 神马 -> 百度 顺序尝试。国内网络环境建议保留 `auto`，或设置为 `bing`、`sm`、`baidu`。如需完全关闭联网搜索：
+搜索默认使用 `auto` 模式，会按 Bing -> 神马 -> 百度 顺序尝试。国内网络环境建议保留 `auto`，或设置为 `bing`、`sm`、`baidu`。
 
-```bash
-SEARCH_ENABLED=false
-# 或
-SEARCH_PROVIDER=none
-```
-
-默认搜索请求会忽略系统 `HTTP_PROXY` / `HTTPS_PROXY`，避免本机代理端口未启动时导致搜索失败。确实需要走代理时：
-
-```bash
-SEARCH_USE_PROXY=true
-```
-
-## 功能
-
-| 功能 | 说明 |
-| --- | --- |
-| 活动格式生成 | 生成 TapTap《我的百分之一》活动格式帖子 |
-| 用户输入优先 | 最终文章中的游戏名称固定使用用户输入值 |
-| 联网搜索 | 可搜索公开资料，并展示搜索成功、失败、超时和无结果状态 |
-| 手动补充 | 支持发售平台、游玩时间、推荐人群、个人故事和许愿卡牌 |
-| 一键复制 | 快速复制生成结果 |
-| 主题系统 | 支持亮色 / 暗色模式和多套主题配色 |
-| 使用限制展示 | 页面底部展示版本、限流说明、GitHub 仓库和 GPL 协议 |
-| 响应式界面 | 适配桌面端和移动端 |
-
-## 技术栈
+## 技术架构
 
 ```mermaid
 flowchart LR
-  User["用户浏览器"] --> Web["Vue 3 + Vite"]
-  Web --> API["Express API"]
+  User["浏览器"] --> Web["Nginx / Vite + Vue 3"]
+  Web --> API["Express REST API"]
   API --> Search["搜索源：Bing / 神马 / 百度 / Google"]
   API --> AI["AI Chat API"]
   API --> DB["SQLite 限流记录"]
 ```
 
+## 技术栈
+
 | 模块 | 技术 |
 | --- | --- |
-| 前端 | Vue 3、Vite、Axios |
-| 后端 | Node.js、Express、Axios |
-| 数据 | SQLite，用于限流记录 |
-| 部署 | Docker、Docker Compose、Nginx |
+| 前端 | Vue 3, Vite, Axios |
+| 后端 | Node.js, Express, Axios |
+| 数据库 | SQLite |
+| 部署 | Docker Compose, Nginx |
 
 ## API
 
-### `GET /api/health`
+| 接口 | 说明 |
+| --- | --- |
+| `GET /api/health` | 健康检查 |
+| `GET /api/config` | 公开运行配置，仅返回前端可展示的限流信息 |
+| `POST /api/generate` | 根据游戏名和可选字段生成帖子 |
 
-健康检查接口。
-
-```bash
-curl http://localhost:3000/api/health
-```
-
-### `GET /api/config`
-
-公开运行配置接口。当前只返回前端可展示的限流配置，不返回 AI Key、模型地址等敏感信息。
-
-```bash
-curl http://localhost:3000/api/config
-```
-
-响应示例：
-
-```json
-{
-  "code": 200,
-  "data": {
-    "rateLimit": {
-      "enabled": true,
-      "windowMinutes": 10,
-      "windowMaxRequests": 3,
-      "dailyMaxRequests": 20
-    }
-  }
-}
-```
-
-### `POST /api/generate`
-
-生成帖子接口。
+生成接口示例：
 
 ```bash
 curl -X POST http://localhost:3000/api/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "gameName": "星露谷物语",
-    "playTime": "80小时",
-    "targetAudience": "喜欢种田、经营和慢节奏探索的玩家"
+    "gameName": "原神",
+    "playTime": "断断续续玩了两年",
+    "targetAudience": "喜欢开放世界和角色养成的玩家"
   }'
 ```
 
@@ -250,8 +195,7 @@ curl -X POST http://localhost:3000/api/generate \
 ## 项目结构
 
 ```text
-.
-├── docker-compose.yml
+onepercent_taptap_generator/
 ├── docs/
 │   ├── assets/
 │   │   └── logo.svg
@@ -261,44 +205,48 @@ curl -X POST http://localhost:3000/api/generate \
 │   │   ├── routes/
 │   │   ├── services/
 │   │   └── app.js
-│   └── package.json
+│   └── Dockerfile
 ├── web/
 │   ├── src/
 │   │   ├── components/
 │   │   ├── styles/
 │   │   └── App.vue
-│   └── package.json
+│   └── Dockerfile
+├── docker-compose.yml
+├── LICENSE
 └── README.md
 ```
 
-## 版本
+## 文档
 
-当前稳定版本：`v1.0.0`
+| 文档 | 说明 |
+| --- | --- |
+| [设计文档](./docs/design.md) | 项目定位、页面结构、接口设计、限流和版本控制要求 |
+| [README 规范](https://github.com/RichardLitt/standard-readme) | README 结构参考 |
 
-版本号约定：
+## 安全说明
 
-- Git 标签使用 `vX.Y.Z`，例如 `v1.0.0`。
-- 前端和后端 `package.json` 使用 npm 语义化版本格式，例如 `1.0.0`。
-- 重要功能完成后按 `docs/design.md` 中的提交规范及时提交并同步远程。
+1. 不要提交 `.env`、API Key、代理账号或任何私密配置。
+2. 公开仓库只应提交 `.env.example` 一类模板文件。
+3. `/api/config` 只暴露限流配置，不暴露 AI Key、模型地址等敏感信息。
+4. 生产环境建议使用 HTTPS，并在网关或反向代理层补充访问频率限制。
+5. 页面打开时会展示免责声明弹窗，提醒用户本项目仅用于交流学习，不应用于违规获取游戏资源或违规参与游戏活动。
+
+## 开源协议
+
+本项目使用 [GNU General Public License v3.0](./LICENSE) 开源。
+
+## 提交规范
+
+提交消息使用中文 Conventional Commit 风格：
+
+```text
+feature:新增帖子生成接口
+fix:修复搜索超时状态展示
+docs:完善README项目文档
+style:优化移动端页面布局
+```
 
 ## 维护者
 
 - [@littleseven2003](https://github.com/littleseven2003)
-
-## 贡献
-
-欢迎通过 GitHub Issues 反馈问题或提出改进建议，也欢迎提交 Pull Request。
-
-提交信息请使用项目约定格式：
-
-```text
-类型:中文描述
-```
-
-常用类型包括 `feature`、`fix`、`docs`、`style`、`refactor`、`config`、`deploy`、`chore`。
-
-README 结构参考 [standard-readme](https://github.com/RichardLitt/standard-readme)，保持标题、目录、安装、使用、贡献和 License 等核心章节可快速定位。
-
-## License
-
-[GPL-3.0](./LICENSE) © littleseven2003

@@ -1,5 +1,54 @@
 <template>
   <div class="shell">
+    <div
+      v-if="showDisclaimer"
+      class="modal-backdrop"
+      role="presentation"
+    >
+      <section
+        class="disclaimer-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="disclaimer-title"
+        aria-describedby="disclaimer-desc"
+      >
+        <header class="disclaimer-head">
+          <span class="disclaimer-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+              <path d="M9 12l2 2 4-5" />
+            </svg>
+          </span>
+          <div>
+            <p class="section-kicker">使用前请阅读</p>
+            <h2 id="disclaimer-title">免责声明</h2>
+          </div>
+        </header>
+
+        <div class="disclaimer-copy">
+          <div id="disclaimer-desc">
+            <p>
+              本工具仅用于软件开发、AI 工具研究与技术交流学习，旨在探索 Web 开发、AI 内容生成、搜索服务整合与开源部署流程。
+            </p>
+            <p>
+              本工具可能涉及已上线游戏《百分之一》及 TapTap 活动相关信息，但不是官方产品，不代表游戏开发方、发行方或 TapTap 平台立场，也不提供任何商业化服务。
+            </p>
+            <div class="disclaimer-rule">
+              <strong>禁止用途</strong>
+              <span>不得将本工具用于违规获取游戏资源、绕过平台或游戏规则、违规参与游戏活动、刷取奖励、伪造内容或其他可能损害游戏方、平台方及其他用户权益的行为。</span>
+            </div>
+            <div class="disclaimer-rule">
+              <strong>用户责任</strong>
+              <span>使用者应遵守相关游戏、平台活动规则、版权、商标和社区规范。生成内容仅供参考，发布前请自行核对事实，并自行承担使用与发布责任。</span>
+            </div>
+          </div>
+          <button class="btn-disclaimer" type="button" @click="showDisclaimer = false">
+            我已了解并继续
+          </button>
+        </div>
+      </section>
+    </div>
+
     <nav class="topbar" aria-label="主导航">
       <a href="/" class="brand" aria-label="首页">
         <span class="brand-mark" aria-hidden="true">
@@ -192,6 +241,7 @@ const palette = ref('violet');
 const paletteOpen = ref(false);
 const formRef = ref(null);
 const usageLimitText = ref('使用限制：按服务端配置');
+const showDisclaimer = ref(true);
 
 const THEME_STORAGE_KEY = 'onepercent-theme';
 const PALETTE_STORAGE_KEY = 'onepercent-palette';
