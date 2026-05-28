@@ -7,7 +7,6 @@
 ![Docker](https://img.shields.io/badge/deploy-Docker-2496ed)
 ![Vue](https://img.shields.io/badge/frontend-Vue%203-42b883)
 ![Node](https://img.shields.io/badge/backend-Node.js-16a34a)
-![Readme](https://img.shields.io/badge/readme-standard-brightgreen)
 
 [快速开始](#快速开始) · [项目特性](#项目特性) · [功能范围](#功能范围) · [技术架构](#技术架构) · [API](#api) · [免责声明](#免责声明)
 
