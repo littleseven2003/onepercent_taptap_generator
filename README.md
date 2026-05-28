@@ -137,6 +137,7 @@ SEARCH_USE_PROXY=true
 - 最终文章中的游戏名称固定使用用户输入值。
 - 支持一键复制生成结果。
 - 支持亮色 / 暗色模式，以及多套主题配色。
+- 页面底部展示版本、使用限制、GitHub 仓库和开源协议。
 - 适配桌面端和移动端。
 
 ## 技术栈
@@ -154,6 +155,30 @@ SEARCH_USE_PROXY=true
 
 ```bash
 curl http://localhost:3000/api/health
+```
+
+### `GET /api/config`
+
+公开运行配置接口。当前只返回前端可展示的限流配置，不返回 AI Key、模型地址等敏感信息。
+
+```bash
+curl http://localhost:3000/api/config
+```
+
+响应示例：
+
+```json
+{
+  "code": 200,
+  "data": {
+    "rateLimit": {
+      "enabled": true,
+      "windowMinutes": 10,
+      "windowMaxRequests": 3,
+      "dailyMaxRequests": 20
+    }
+  }
+}
 ```
 
 ### `POST /api/generate`

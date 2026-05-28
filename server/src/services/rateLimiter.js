@@ -6,6 +6,15 @@ const DAILY_MAX = parseInt(process.env.RATE_LIMIT_DAILY_MAX, 10) || 0;
 
 const LIMIT_ENABLED = WINDOW_MINUTES > 0 || DAILY_MAX > 0;
 
+function getRateLimitConfig() {
+  return {
+    enabled: LIMIT_ENABLED,
+    windowMinutes: WINDOW_MINUTES,
+    windowMaxRequests: WINDOW_MAX,
+    dailyMaxRequests: DAILY_MAX,
+  };
+}
+
 function getIp(req) {
   return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip;
 }
@@ -59,4 +68,4 @@ function logGeneration(req, gameName, success) {
   );
 }
 
-module.exports = { checkRateLimit, logGeneration, getIp };
+module.exports = { checkRateLimit, logGeneration, getIp, getRateLimitConfig };

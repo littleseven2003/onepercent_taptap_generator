@@ -118,6 +118,58 @@
         </svg>
         <span>{{ error }}</span>
       </div>
+
+      <footer class="site-footer" aria-label="项目信息">
+        <div class="footer-card">
+          <span class="footer-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M4 7h16" />
+              <path d="M4 12h16" />
+              <path d="M4 17h10" />
+            </svg>
+            版本 v1.0.0
+          </span>
+          <span
+            class="footer-item footer-tooltip"
+            tabindex="0"
+            :aria-label="usageLimitText"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+              <path d="M9 12l2 2 4-5" />
+            </svg>
+            使用限制
+            <span class="footer-tooltip-bubble" role="tooltip">
+              {{ usageLimitText }}
+            </span>
+          </span>
+          <a
+            class="footer-item"
+            href="https://github.com/littleseven2003/onepercent_taptap_generator"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.7.5.09.68-.22.68-.49 0-.24-.01-1.04-.01-1.89-2.78.62-3.37-1.21-3.37-1.21-.45-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.94.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.38 9.38 0 0 1 12 6.94c.85 0 1.71.12 2.51.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.05 10.05 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z" />
+            </svg>
+            GitHub 仓库
+          </a>
+          <a
+            class="footer-item"
+            href="https://www.gnu.org/licenses/gpl-3.0.html"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7Z" />
+              <path d="M14 2v5h5" />
+              <path d="M9 15h6" />
+              <path d="M9 18h4" />
+            </svg>
+            GPL-3.0
+          </a>
+        </div>
+      </footer>
     </main>
   </div>
 </template>
@@ -128,7 +180,7 @@ import GeneratorForm from './components/GeneratorForm.vue';
 import ResultCard from './components/ResultCard.vue';
 import EmptyState from './components/EmptyState.vue';
 import SearchStatus from './components/SearchStatus.vue';
-import { generatePost } from './api/generate';
+import { generatePost, getRuntimeConfig } from './api/generate';
 
 const loading = ref(false);
 const result = ref(null);
@@ -139,6 +191,7 @@ const theme = ref('light');
 const palette = ref('violet');
 const paletteOpen = ref(false);
 const formRef = ref(null);
+const usageLimitText = ref('使用限制：按服务端配置');
 
 const THEME_STORAGE_KEY = 'onepercent-theme';
 const PALETTE_STORAGE_KEY = 'onepercent-palette';
@@ -178,7 +231,34 @@ onMounted(() => {
   } else {
     applyPalette(palette.value);
   }
+
+  loadRuntimeConfig();
 });
+
+async function loadRuntimeConfig() {
+  try {
+    const res = await getRuntimeConfig();
+    usageLimitText.value = formatUsageLimit(res.data.data.rateLimit);
+  } catch {
+    usageLimitText.value = '使用限制：按服务端配置';
+  }
+}
+
+function formatUsageLimit(rateLimit) {
+  if (!rateLimit?.enabled) {
+    return '使用限制：当前未开启';
+  }
+
+  const parts = [];
+  if (rateLimit.windowMinutes > 0 && rateLimit.windowMaxRequests > 0) {
+    parts.push(`${rateLimit.windowMinutes}分钟${rateLimit.windowMaxRequests}次`);
+  }
+  if (rateLimit.dailyMaxRequests > 0) {
+    parts.push(`每日${rateLimit.dailyMaxRequests}次`);
+  }
+
+  return `使用限制：${parts.length ? parts.join('，') : '当前未开启'}`;
+}
 
 async function handleGenerate(payload) {
   loading.value = true;

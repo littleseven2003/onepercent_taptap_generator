@@ -213,6 +213,8 @@ svg {
 .shell {
   min-height: 100vh;
   padding: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .topbar {
@@ -220,6 +222,7 @@ svg {
   top: 16px;
   z-index: 10;
   max-width: 1120px;
+  width: 100%;
   margin: 0 auto;
   padding: 10px 12px;
   display: flex;
@@ -361,9 +364,13 @@ svg {
 }
 
 .workspace {
+  flex: 1;
   max-width: 1120px;
+  width: 100%;
   margin: 0 auto;
   padding: 44px 0 56px;
+  display: flex;
+  flex-direction: column;
 }
 
 .intro-panel {
@@ -1010,6 +1017,104 @@ svg {
   border-color: color-mix(in srgb, var(--color-warn) 35%, var(--color-line));
 }
 
+.site-footer {
+  margin-top: auto;
+  padding-top: 30px;
+  display: flex;
+  justify-content: center;
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.footer-card {
+  width: min(100%, 560px);
+  min-height: 54px;
+  padding: 10px 14px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 18px;
+  background: color-mix(in srgb, var(--color-panel) 84%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 72%, var(--color-line));
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 34px color-mix(in srgb, var(--color-brand) 9%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.footer-item {
+  position: relative;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.footer-item svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-brand);
+}
+
+.footer-card a {
+  color: var(--color-brand-strong);
+  text-decoration: none;
+}
+
+.footer-card a:hover {
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.footer-tooltip {
+  cursor: help;
+  outline-offset: 4px;
+}
+
+.footer-tooltip-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  z-index: 30;
+  width: max-content;
+  max-width: min(280px, calc(100vw - 48px));
+  padding: 9px 12px;
+  color: var(--color-ink);
+  background: var(--color-panel);
+  border: 1px solid color-mix(in srgb, #ffffff 72%, var(--color-line));
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-panel);
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: normal;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 6px);
+  transition: opacity 160ms var(--ease), transform 160ms var(--ease);
+}
+
+.footer-tooltip-bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 10px;
+  height: 10px;
+  background: var(--color-panel);
+  border-right: 1px solid color-mix(in srgb, #ffffff 72%, var(--color-line));
+  border-bottom: 1px solid color-mix(in srgb, #ffffff 72%, var(--color-line));
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.footer-tooltip:hover .footer-tooltip-bubble,
+.footer-tooltip:focus-visible .footer-tooltip-bubble {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
 .expand-enter-active,
 .expand-leave-active {
   transition: opacity 180ms var(--ease), transform 180ms var(--ease);
@@ -1122,5 +1227,14 @@ svg {
 
   .preview-card {
     padding: 16px;
+  }
+
+  .site-footer {
+    padding-top: 24px;
+    font-size: 12px;
+  }
+
+  .footer-card {
+    gap: 4px 14px;
   }
 }

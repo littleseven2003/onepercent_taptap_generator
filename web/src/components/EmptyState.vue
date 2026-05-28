@@ -25,5 +25,16 @@
 <script setup>
 defineEmits(['tryExample']);
 
-const examples = ['星露谷物语', '空洞骑士', '塞尔达传说', '原神'];
+const examples = [
+  '原神',
+  '崩坏：星穹铁道',
+  '绝区零',
+  '鸣潮',
+  '明日方舟',
+  '碧蓝航线',
+  '蔚蓝档案',
+  '少女前线2',
+  '阴阳师',
+  '命运-冠位指定',
+];
 </script>
