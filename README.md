@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="./docs/assets/logo.svg" alt="OnePercent TapTap Generator Logo" width="760">
-</p>
-
 # 百分之一帖子生成器
 
 面向 TapTap《我的百分之一》活动的轻量 AI 推荐帖生成工具。
@@ -197,8 +193,6 @@ curl -X POST http://localhost:3000/api/generate \
 ```text
 onepercent_taptap_generator/
 ├── docs/
-│   ├── assets/
-│   │   └── logo.svg
 │   └── design.md
 ├── server/
 │   ├── src/
